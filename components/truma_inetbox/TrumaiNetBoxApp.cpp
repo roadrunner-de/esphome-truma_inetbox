@@ -379,16 +379,15 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
     }
 
     if (device.device_count == 2 &&
-    ( this->heater_device_ != TRUMA_DEVICE::UNKNOWN ||
+    (
+      this->heater_device_ != TRUMA_DEVICE::UNKNOWN ||
       this->aircon_device_ != TRUMA_DEVICE::UNKNOWN)) {
-  // Assumption 2 devices mean CP Plus + Heater OR CP Plus + Aircon.
       this->init_recieved_ = micros();
-      } else if (device.device_count == 3 &&
+    } else if (device.device_count == 3 &&
       this->heater_device_ != TRUMA_DEVICE::UNKNOWN &&
       this->aircon_device_ != TRUMA_DEVICE::UNKNOWN) {
-  // Assumption 3 devices mean CP Plus, Heater and Aircon.
       this->init_recieved_ = micros();
-      }
+    }
 
     return response;
   } else {
