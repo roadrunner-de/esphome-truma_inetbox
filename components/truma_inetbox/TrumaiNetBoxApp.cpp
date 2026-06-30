@@ -190,6 +190,15 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
 
   auto statusFrame = reinterpret_cast<const StatusFrame *>(message);
   auto header = &statusFrame->genericHeader;
+  ESP_LOGI(TAG,
+         "DEBUG frame: sid=%02X type=%02X len=%u msg_len=%u checksum=%02X h2=%02X h3=%02X",
+         message[0],
+         header->message_type,
+         header->message_length,
+         message_len,
+         header->checksum,
+         header->header_2,
+         header->header_3);
   // Validate Truma frame checksum
   if (header->checksum != data_checksum(&statusFrame->raw[10], sizeof(StatusFrame) - 10, (0xFF - header->checksum)) ||
       header->header_2 != 'T' || header->header_3 != 0x01) {
@@ -319,6 +328,18 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
     // BB.00.1F.00.1E.00.00.22.FF.FF.FF.54.01.0C.0B.00.71.03.01.01.00.10.03.02.06.00.02.00.00
     // BB.00.1F.00.1E.00.00.22.FF.FF.FF.54.01.0C.0B.00.7C.03.02.01.00.01.0C.00.01.02.01.00.00
     auto device = statusFrame->device;
+    ESP_LOGI(TAG,
+         "DEBUG device: id=%u count=%u sw=%02X.%02X.%02X hw=%04X.%02X unk1=%02X unk2=%02X unk3=%02X",
+         device.device_id,
+         device.device_count,
+         device.software_revision[0],
+         device.software_revision[1],
+         device.software_revision[2],
+         device.hardware_revision_major,
+         device.hardware_revision_minor,
+         device.unknown_1,
+         device.unknown_2,
+         device.unknown_3);
 
     ESP_LOGD(TAG, "StatusFrameDevice %d/%d - %d.%02d.%02d %04X.%02X (%02X %02X)", device.device_id + 1,
              device.device_count, device.software_revision[0], device.software_revision[1], device.software_revision[2],
@@ -349,6 +370,7 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
       // Assumption second device is Aircon
       if (device.device_id == 2) {
         this->aircon_device_ = TRUMA_DEVICE::AIRCON_DEVICE;
+
       }
     }
 
