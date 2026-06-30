@@ -190,6 +190,7 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
 
   auto statusFrame = reinterpret_cast<const StatusFrame *>(message);
   auto header = &statusFrame->genericHeader;
+  ESP_LOGE(TAG, "### ROADRUNNER DEBUG BUILD ###");
   ESP_LOGI(TAG,
          "DEBUG frame: sid=%02X type=%02X len=%u msg_len=%u checksum=%02X h2=%02X h3=%02X",
          message[0],
