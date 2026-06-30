@@ -351,6 +351,9 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
       bool found_unknown_value = false;
       if (device.unknown_1 != 0x00)
         found_unknown_value = true;
+//      if (device.device_count == 2 && device.device_id == 1) {
+//        found_unknown_value = false;
+//      }
       if (truma_device != TRUMA_DEVICE::AIRCON_DEVICE && truma_device != TRUMA_DEVICE::HEATER_COMBI4 &&
           truma_device != TRUMA_DEVICE::HEATER_VARIO && truma_device != TRUMA_DEVICE::CPPLUS_COMBI &&
           truma_device != TRUMA_DEVICE::CPPLUS_VARIO && truma_device != TRUMA_DEVICE::HEATER_COMBI6D)
@@ -365,6 +368,8 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
 
     if (!is_CPPLUSDevice) {
       if (device.device_count == 2 && device.device_id == 1) {
+        this->aircon_device_ = TRUMA_DEVICE::AIRCON_DEVICE;
+      } else if (truma_device == TRUMA_DEVICE::AIRCON_DEVICE) {
         this->aircon_device_ = TRUMA_DEVICE::AIRCON_DEVICE;
       } else if (device.device_id == 1) {
         this->heater_device_ = truma_device;
