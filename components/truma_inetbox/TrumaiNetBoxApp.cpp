@@ -364,14 +364,12 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
     const auto is_CPPLUSDevice = device.device_id == 0;
 
     if (!is_CPPLUSDevice) {
-      // Assumption first device is Heater
-      if (device.device_id == 1) {
-        this->heater_device_ = truma_device;
-      }
-      // Assumption second device is Aircon
-      if (device.device_id == 2) {
+      if (device.device_count == 2 && device.device_id == 1) {
         this->aircon_device_ = TRUMA_DEVICE::AIRCON_DEVICE;
-
+      } else if (device.device_id == 1) {
+        this->heater_device_ = truma_device;
+      } else if (device.device_id == 2) {
+        this->aircon_device_ = TRUMA_DEVICE::AIRCON_DEVICE;
       }
     }
 
