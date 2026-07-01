@@ -1,3 +1,4 @@
+#error "Building TrumaAirconClimate.cpp"
 #include "TrumaAirconClimate.h"
 #include "esphome/components/truma_inetbox/helpers.h"
 
