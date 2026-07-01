@@ -223,6 +223,7 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
     ESP_LOGI(TAG, "StatusFrameAirconManual");
     const auto *stat = &statusFrame->airconManual;
     const uint8_t *p = reinterpret_cast<const uint8_t *>(stat);
+    
     const bool is_saphir_tin2 =
       this->aircon_device_ == TRUMA_DEVICE::AIRCON_DEVICE &&
       this->heater_device_ == TRUMA_DEVICE::UNKNOWN;
@@ -264,7 +265,17 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
     return response;
   } else if (header->message_type == STATUS_FRAME_AIRCON_MANUAL_INIT &&
              header->message_length == sizeof(StatusFrameAirconManualInit)) {
+
     ESP_LOGI(TAG, "StatusFrameAirconManualInit");
+    const auto *stat = &statusFrame->airconManualInit;
+    const uint8_t *p = reinterpret_cast<const uint8_t *>(stat);
+
+    ESP_LOGI(TAG,
+    "%02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X "
+    "%02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
+    p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9], p[10],
+    p[11], p[12], p[13], p[14], p[15], p[16], p[17], p[18], p[19], p[20], p[21]);
+
     // Example:
     // SID<---------PREAMBLE---------->|<---MSG_HEAD---->|
     // BB.00.1F.00.1E.00.00.22.FF.FF.FF.54.01.16.3F.00.E2.00.00.71.01.00.00.00.00.00.00.00.00.00.00.00.00.00.00.00.00.00.00
