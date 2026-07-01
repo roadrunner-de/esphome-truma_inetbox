@@ -11,7 +11,7 @@ void TrumaAirconManualNumber::setup() {
   this->parent_->get_aircon_manual()->add_on_message_callback([this](const StatusFrameAirconManual *status) {
     switch (this->type_) {
 //      case TRUMA_NUMBER_TYPE::AIRCON_MANUAL_TEMPERATURE:
-ESP_LOGI(TAG,
+/* ESP_LOGI(TAG,
          "AIRCON RAW mode=%02X op=%02X energy=%02X target=%02X current_ac=%02X current_room=%02X u07=%02X u08=%02X u11=%02X u12=%02X u15=%02X u16=%02X",
          static_cast<uint8_t>(status->mode),
          static_cast<uint8_t>(status->operation),
@@ -25,7 +25,11 @@ ESP_LOGI(TAG,
          status->unknown_12,
          status->unknown_15,
          status->unknown_16);
-          this->publish_state(temp_code_to_decimal(status->target_temp_aircon, 0));
+*/
+uint16_t raw_target =
+    ((uint16_t) status->current_temp_aircon[1] << 8) |
+    status->current_temp_aircon[0];
+          this->publish_state((raw_target / 10.0f) - 273.0f);
         break;
       default:
         break;
