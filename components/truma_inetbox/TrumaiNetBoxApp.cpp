@@ -223,6 +223,19 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
     ESP_LOGI(TAG, "StatusFrameAirconManual");
     const auto *stat = &statusFrame->airconManual;
     const uint8_t *p = reinterpret_cast<const uint8_t *>(stat);
+    const bool is_saphir_tin2 =
+      this->aircon_device_ == TRUMA_DEVICE::AIRCON_DEVICE &&
+      this->heater_device_ == TRUMA_DEVICE::UNKNOWN;
+
+    if (is_saphir_tin2) {
+      const uint16_t room_temp_raw =
+          (static_cast<uint16_t>(p[9]) << 8) | p[8];
+    
+    ESP_LOGI(TAG,
+         "SAPHIR_TIN2 room_temp_raw=%u room_temp=%.1f",
+         room_temp_raw,
+         (room_temp_raw / 10.0f) - 273.0f);      
+    }
 
     ESP_LOGI(TAG,
          "%02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",

@@ -11,10 +11,7 @@ void TrumaAirconManualNumber::setup() {
   this->parent_->get_aircon_manual()->add_on_message_callback([this](const StatusFrameAirconManual *status) {
     switch (this->type_) {
       case TRUMA_NUMBER_TYPE::AIRCON_MANUAL_TEMPERATURE: {
-        const uint16_t raw_target =
-            (static_cast<uint16_t>(status->unknown_08) << 8) |
-            status->unknown_07;
-        this->publish_state((raw_target / 10.0f) - 273.0f);
+        this->publish_state(temp_code_to_decimal(status->target_temp_aircon, 0));
         break;
       }
       default:
