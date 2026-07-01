@@ -221,6 +221,12 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
   } else if (header->message_type == STATUS_FRAME_AIRCON_MANUAL &&
              header->message_length == sizeof(StatusFrameAirconManual)) {
     ESP_LOGI(TAG, "StatusFrameAirconManual");
+    const uint8_t *p = reinterpret_cast<const uint8_t *>(status);
+
+    ESP_LOGI(TAG,
+         "%02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
+         p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8],
+         p[9], p[10], p[11], p[12], p[13], p[14], p[15], p[16], p[17]);
     // Example:
     // SID<---------PREAMBLE---------->|<---MSG_HEAD---->|
     // - ac temps form 16 - 30 C in +2 steps

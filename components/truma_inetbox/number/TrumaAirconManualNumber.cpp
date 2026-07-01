@@ -20,20 +20,20 @@ void TrumaAirconManualNumber::setup() {
       default:
       break;
     }
-      /* ESP_LOGI(TAG,
-         "AIRCON RAW mode=%02X op=%02X energy=%02X target=%02X current_ac=%02X current_room=%02X u07=%02X u08=%02X u11=%02X u12=%02X u15=%02X u16=%02X",
-         static_cast<uint8_t>(status->mode),
-         static_cast<uint8_t>(status->operation),
-         static_cast<uint8_t>(status->energy_mix),
-         static_cast<uint8_t>(status->target_temp_aircon),
-         static_cast<uint8_t>(status->current_temp_aircon),
-         static_cast<uint8_t>(status->current_temp_room),
-         status->unknown_07,
-         status->unknown_08,
-         status->unknown_11,
-         status->unknown_12,
-         status->unknown_15,
-         status->unknown_16);
+  /* ESP_LOGI(TAG,
+    "AIRCON RAW mode=%02X op=%02X energy=%02X target=%02X current_ac=%02X current_room=%02X u07=%02X u08=%02X u11=%02X u12=%02X u15=%02X u16=%02X",
+    static_cast<uint8_t>(status->mode),
+    static_cast<uint8_t>(status->operation),
+    static_cast<uint8_t>(status->energy_mix),
+    static_cast<uint8_t>(status->target_temp_aircon),
+    static_cast<uint8_t>(status->current_temp_aircon),
+    static_cast<uint8_t>(status->current_temp_room),
+    status->unknown_07,
+    status->unknown_08,
+    status->unknown_11,
+    status->unknown_12,
+    status->unknown_15,
+    status->unknown_16);
 */
   });
 }
