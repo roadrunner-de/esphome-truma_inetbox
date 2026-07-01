@@ -6,6 +6,7 @@ namespace truma_inetbox {
 
 static const char *const TAG = "truma_inetbox.aircon_climate";
 void TrumaAirconClimate::setup() {
+  ESP_LOGI(TAG, "===== AIRCON SETUP CALLED =====");
   this->parent_->get_aircon_manual()->add_on_message_callback([this](const StatusFrameAirconManual *status_aircon) {
     const uint8_t *p = reinterpret_cast<const uint8_t *>(status_aircon);
 
