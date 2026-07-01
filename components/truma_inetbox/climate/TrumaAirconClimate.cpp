@@ -17,7 +17,11 @@ void TrumaAirconClimate::setup() {
     (static_cast<uint16_t>(p[9]) << 8) | p[8];
 
     // Publish updated state
-    this->target_temperature = (target_raw / 10.0f) - 273.0f;
+    if (target_raw == 0) {
+      this->target_temperature = NAN;
+    } else {
+      this->target_temperature = (target_raw / 10.0f) - 273.0f;
+    }
     this->current_temperature = (current_raw / 10.0f) - 273.0f;
 
     switch (p[0]) {
@@ -83,7 +87,18 @@ void TrumaAirconClimate::setup() {
 void TrumaAirconClimate::dump_config() { LOG_CLIMATE(TAG, "Truma Aircon Climate", this); }
 
 void TrumaAirconClimate::control(const climate::ClimateCall &call) {
-  // TODO: write support for Saphir mode, fan and temperature
+  if (call.get_target_temperature().has_value()) {
+    float temp = *call.get_target_temperature();
+
+    if (temp < 16) {
+      temp = 16;
+    }
+    if (temp > 30) {
+      temp = 30;
+    }
+
+    this->parent_->get_aircon_manual()->action_set_temp(static_cast<uint8_t>(temp));
+  }
 }
 
 climate::ClimateTraits TrumaAirconClimate::traits() {
