@@ -221,6 +221,7 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
   } else if (header->message_type == STATUS_FRAME_AIRCON_MANUAL &&
              header->message_length == sizeof(StatusFrameAirconManual)) {
     ESP_LOGI(TAG, "StatusFrameAirconManual");
+    const auto *stat = &statusFrame->airconManual;
     const uint8_t *p = reinterpret_cast<const uint8_t *>(stat);
 
     ESP_LOGI(TAG,
