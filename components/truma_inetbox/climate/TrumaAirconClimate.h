@@ -8,7 +8,7 @@
 namespace esphome {
   namespace truma_inetbox {
   
-  class TrumaRoomClimate : public Component, public climate::Climate, public Parented<TrumaiNetBoxApp> {
+  class TrumaAirconClimate : public Component, public climate::Climate, public Parented<TrumaiNetBoxApp> {
    public:
     void loop() override {}
     void dump_config() override;
