@@ -18,8 +18,11 @@ from esphome.components.climate import (
 CLIMATE_MODES = {
     "OFF": ClimateMode.CLIMATE_MODE_OFF,
     "HEAT": ClimateMode.CLIMATE_MODE_HEAT,
-    "AUTO": ClimateMode.CLIMATE_MODE_AUTO,
+    "COOL": ClimateMode.CLIMATE_MODE_COOL,
+    "FAN_ONLY": ClimateMode.CLIMATE_MODE_FAN_ONLY,
+    "AUTO": ClimateMode.CLIMATE_MODE_HEAT_COOL,
 }
+
 CLIMATE_VISUAL_SCHEMA = cv.Schema({
     cv.Optional(CONF_TARGET_TEMPERATURE, default={}): cv.Schema({
         cv.Optional(CONF_MIN_TEMPERATURE, default=5.0): cv.float_,
@@ -38,6 +41,7 @@ TrumaClimate = truma_inetbox_ns.class_(
 CONF_SUPPORTED_TYPE = {
     "ROOM": truma_inetbox_ns.class_("TrumaRoomClimate", climate.Climate, cg.Component),
     "WATER": truma_inetbox_ns.class_("TrumaWaterClimate", climate.Climate, cg.Component),
+    "AIRCON": truma_inetbox_ns.class_("TrumaAirconClimate", climate.Climate, cg.Component),
 }
 
 
