@@ -43,6 +43,26 @@ void TrumaSensor::setup() {
         break;
     }
   });
+
+  this->parent_->get_aircon_manual()->add_on_message_callback([this](const StatusFrameAirconManual *status_aircon) {
+    const uint8_t *p = reinterpret_cast<const uint8_t *>(status_aircon);
+    const uint16_t target_raw = (static_cast<uint16_t>(p[5]) << 8) | p[4];
+    const uint16_t current_raw = (static_cast<uint16_t>(p[9]) << 8) | p[8];
+    switch (this->type_) {
+      case TRUMA_SENSOR_TYPE::AIRCON_CURRENT_TEMPERATURE:
+        this->publish_state((current_raw / 10.0f) - 273.0f);
+        break;
+      case TRUMA_SENSOR_TYPE::AIRCON_TARGET_TEMPERATURE:
+        if (target_raw == 0) {
+          this->publish_state(0);
+        } else {
+          this->publish_state((target_raw / 10.0f) - 273.0f);
+        }
+        break;
+      default:
+        break;
+    }
+  });
 }
 
 void TrumaSensor::dump_config() {

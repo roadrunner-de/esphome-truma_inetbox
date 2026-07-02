@@ -225,7 +225,7 @@ climate::ClimateTraits TrumaAirconClimate::traits() {
   auto traits = climate::ClimateTraits();
   //traits.set_supports_current_temperature(true);
   traits.add_feature_flags(esphome::climate::CLIMATE_SUPPORTS_CURRENT_TEMPERATURE);
-  
+
   traits.set_supported_modes({
     climate::CLIMATE_MODE_OFF,
     climate::CLIMATE_MODE_FAN_ONLY,
@@ -233,15 +233,21 @@ climate::ClimateTraits TrumaAirconClimate::traits() {
     climate::CLIMATE_MODE_HEAT,
     climate::CLIMATE_MODE_HEAT_COOL,
   });
-  
-  traits.set_supported_fan_modes({{
+
+  if (this->mode == climate::CLIMATE_MODE_HEAT_COOL) {
+    traits.set_supported_fan_modes({
+      climate::CLIMATE_FAN_OFF,
+      climate::CLIMATE_FAN_AUTO,
+    });
+  } else {
+    traits.set_supported_fan_modes({
       climate::CLIMATE_FAN_OFF,
       climate::CLIMATE_FAN_LOW,
       climate::CLIMATE_FAN_MEDIUM,
       climate::CLIMATE_FAN_HIGH,
       climate::CLIMATE_FAN_QUIET,
-      climate::CLIMATE_FAN_AUTO,
-  }});
+    });
+  }
 
   // traits.set_supported_presets({{
   //     climate::CLIMATE_PRESET_NONE,
@@ -254,7 +260,7 @@ climate::ClimateTraits TrumaAirconClimate::traits() {
   traits.set_visual_temperature_step(1);
   return traits;
 }
-  
+
 void TrumaAirconClimate::set_supported_modes(const std::set<climate::ClimateMode> &modes) {
   this->supported_modes_ = modes;
 }
