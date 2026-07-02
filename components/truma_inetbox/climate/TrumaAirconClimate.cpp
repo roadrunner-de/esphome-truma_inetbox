@@ -240,6 +240,7 @@ climate::ClimateTraits TrumaAirconClimate::traits() {
       climate::CLIMATE_FAN_MEDIUM,
       climate::CLIMATE_FAN_HIGH,
       climate::CLIMATE_FAN_QUIET,
+      climate::CLIMATE_FAN_AUTO,
   }});
 
   // traits.set_supported_presets({{
