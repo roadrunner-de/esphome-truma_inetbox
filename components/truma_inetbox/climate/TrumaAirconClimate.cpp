@@ -123,31 +123,28 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
 
     switch (mode) {
       case climate::CLIMATE_MODE_OFF:
-        this->parent_->get_aircon_manual()->action_set_mode(AirconMode::OFF);
+        this->parent_->get_aircon_manual()->action_set_mode(AirconMode::OFF, 0);
         ESP_LOGI(TAG, "AIRCON CONTROL: OFF requested");
         break;
 
       case climate::CLIMATE_MODE_COOL:
-        this->parent_->get_aircon_manual()->action_set_temp(static_cast<uint8_t>(temp));
         this->parent_->get_aircon_manual()->action_set_mode(
-            AirconMode::AC_COOLING, AirconOperation::AC_ONLY);
+            AirconMode::AC_COOLING, static_cast<uint8_t>(temp), AirconOperation::AC_ONLY);
         break;
 
       case climate::CLIMATE_MODE_HEAT:
-        this->parent_->get_aircon_manual()->action_set_temp(static_cast<uint8_t>(temp));
         this->parent_->get_aircon_manual()->action_set_mode(
-            AirconMode::AC_COOLING, AirconOperation::AUTO);
+            static_cast<AirconMode>(0x06), static_cast<uint8_t>(temp), AirconOperation::AC_ONLY);
         break;
 
       case climate::CLIMATE_MODE_HEAT_COOL:
-        this->parent_->get_aircon_manual()->action_set_temp(static_cast<uint8_t>(temp));
         this->parent_->get_aircon_manual()->action_set_mode(
-            AirconMode::AC_COOLING, AirconOperation::AUTO);
+            static_cast<AirconMode>(0x07), static_cast<uint8_t>(temp), AirconOperation::AC_ONLY);
         break;
 
       case climate::CLIMATE_MODE_FAN_ONLY:
         this->parent_->get_aircon_manual()->action_set_mode(
-            AirconMode::AC_VENTILATION, AirconOperation::AC_ONLY);
+            AirconMode::AC_VENTILATION, static_cast<uint8_t>(temp), AirconOperation::AC_ONLY);
         break;
 
       default:
