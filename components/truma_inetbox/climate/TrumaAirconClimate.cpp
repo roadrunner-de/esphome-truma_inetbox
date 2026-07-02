@@ -45,26 +45,30 @@ void TrumaAirconClimate::setup() {
         break;
     }
 
-    switch (p[2]) {
-      case 0x71:
-        this->fan_mode = climate::CLIMATE_FAN_LOW;
-        break;
-      case 0x72:
-        this->fan_mode = climate::CLIMATE_FAN_MEDIUM;
-        break;
-      case 0x73:
-        this->fan_mode = climate::CLIMATE_FAN_HIGH;
-        break;
-      case 0x74:
-        this->fan_mode = climate::CLIMATE_FAN_QUIET;
-        break;
-      case 0x77:
-        this->fan_mode = climate::CLIMATE_FAN_AUTO;
-        break;
-      default:
-        this->fan_mode = climate::CLIMATE_FAN_LOW;
-        break;
+    if (this->mode == climate::CLIMATE_MODE_OFF) {
+      this->fan_mode = climate::CLIMATE_FAN_OFF;
+    } else {
+      switch (p[2]) {
+        case 0x71:
+          this->fan_mode = climate::CLIMATE_FAN_LOW;
+          break;
+        case 0x72:
+          this->fan_mode = climate::CLIMATE_FAN_MEDIUM;
+          break;
+        case 0x73:
+          this->fan_mode = climate::CLIMATE_FAN_HIGH;
+          break;
+        case 0x74:
+          this->fan_mode = climate::CLIMATE_FAN_QUIET;
+          break;
+        case 0x77:
+          this->fan_mode = climate::CLIMATE_FAN_AUTO;
+          break;
+        default:
+          this->fan_mode = climate::CLIMATE_FAN_LOW;
+          break;
       }
+    }
 
     // switch (status_heater->heating_mode) {
     //   case HeatingMode::HEATING_MODE_ECO:
@@ -87,8 +91,17 @@ void TrumaAirconClimate::setup() {
 void TrumaAirconClimate::dump_config() { LOG_CLIMATE(TAG, "Truma Aircon Climate", this); }
 
 void TrumaAirconClimate::control(const climate::ClimateCall &call) {
+  float temp = this->target_temperature;
+
+  if (std::isnan(temp) || temp < 16) {
+    temp = 22;
+  }
+  if (temp > 30) {
+    temp = 30;
+  }
+
   if (call.get_target_temperature().has_value()) {
-    float temp = *call.get_target_temperature();
+    temp = *call.get_target_temperature();
 
     if (temp < 16) {
       temp = 16;
@@ -98,6 +111,38 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
     }
 
     this->parent_->get_aircon_manual()->action_set_temp(static_cast<uint8_t>(temp));
+  }
+
+  if (call.get_mode().has_value()) {
+    climate::ClimateMode mode = *call.get_mode();
+
+    switch (mode) {
+      case climate::CLIMATE_MODE_OFF:
+        this->parent_->get_aircon_manual()->action_set_mode(AirconMode::OFF);
+        break;
+
+      case climate::CLIMATE_MODE_COOL:
+        this->parent_->get_aircon_manual()->action_set_temp(static_cast<uint8_t>(temp));
+        this->parent_->get_aircon_manual()->action_set_mode(AirconMode::AC_COOLING);
+        break;
+
+      case climate::CLIMATE_MODE_HEAT:
+        this->parent_->get_aircon_manual()->action_set_temp(static_cast<uint8_t>(temp));
+        this->parent_->get_aircon_manual()->action_set_mode(AirconMode::AC_HEATING);
+        break;
+
+      case climate::CLIMATE_MODE_HEAT_COOL:
+        this->parent_->get_aircon_manual()->action_set_temp(static_cast<uint8_t>(temp));
+        this->parent_->get_aircon_manual()->action_set_mode(AirconMode::AUTO);
+        break;
+
+      case climate::CLIMATE_MODE_FAN_ONLY:
+        this->parent_->get_aircon_manual()->action_set_mode(AirconMode::VENTILATION);
+        break;
+
+      default:
+        break;
+    }
   }
 }
 
@@ -116,6 +161,7 @@ climate::ClimateTraits TrumaAirconClimate::traits() {
   });
   
   traits.set_supported_fan_modes({{
+      climate::CLIMATE_FAN_OFF,
       climate::CLIMATE_FAN_LOW,
       climate::CLIMATE_FAN_MEDIUM,
       climate::CLIMATE_FAN_HIGH,
