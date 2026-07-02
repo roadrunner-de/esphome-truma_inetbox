@@ -16,7 +16,7 @@ class TrumaiNetBoxAppAirconManual
 
   bool action_set_temp(uint8_t temperature);
   bool action_set_mode(AirconMode mode, uint8_t temperature = 0, AirconOperation operation = AirconOperation::AC_ONLY);
-  bool action_set_fan(uint8_t operation);
+  bool action_set_fan(AirconMode mode, uint8_t temperature, uint8_t operation);
 };
 
 }  // namespace truma_inetbox
