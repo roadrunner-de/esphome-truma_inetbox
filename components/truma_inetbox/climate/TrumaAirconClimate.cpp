@@ -91,10 +91,11 @@ void TrumaAirconClimate::setup() {
 void TrumaAirconClimate::dump_config() { LOG_CLIMATE(TAG, "Truma Aircon Climate", this); }
 
 void TrumaAirconClimate::control(const climate::ClimateCall &call) {
-  ESP_LOGI(TAG, "AIRCON CONTROL called: mode=%s temp=%s fan=%s",
+/*  ESP_LOGD(TAG, "AIRCON CONTROL called: mode=%s temp=%s fan=%s",
     call.get_mode().has_value() ? "yes" : "no",
     call.get_target_temperature().has_value() ? "yes" : "no",
     call.get_fan_mode().has_value() ? "yes" : "no");
+*/
 
   float temp = this->target_temperature;
 
@@ -221,7 +222,6 @@ climate::ClimateTraits TrumaAirconClimate::traits() {
       climate::CLIMATE_FAN_MEDIUM,
       climate::CLIMATE_FAN_HIGH,
       climate::CLIMATE_FAN_QUIET,
-      climate::CLIMATE_FAN_AUTO,
   }});
 
   // traits.set_supported_presets({{
