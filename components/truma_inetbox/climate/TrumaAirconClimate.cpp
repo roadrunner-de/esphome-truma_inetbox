@@ -123,23 +123,27 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
 
       case climate::CLIMATE_MODE_COOL:
         this->parent_->get_aircon_manual()->action_set_temp(static_cast<uint8_t>(temp));
-        this->parent_->get_aircon_manual()->action_set_mode(AirconMode::AC_COOLING);
+        this->parent_->get_aircon_manual()->action_set_mode(
+            AirconMode::AC_COOLING, AirconOperation::AC_ONLY);
         break;
 
       case climate::CLIMATE_MODE_HEAT:
         this->parent_->get_aircon_manual()->action_set_temp(static_cast<uint8_t>(temp));
-        this->parent_->get_aircon_manual()->action_set_mode(AirconMode::AC_HEATING);
+        this->parent_->get_aircon_manual()->action_set_mode(
+            AirconMode::AC_COOLING, AirconOperation::AUTO);
         break;
 
       case climate::CLIMATE_MODE_HEAT_COOL:
         this->parent_->get_aircon_manual()->action_set_temp(static_cast<uint8_t>(temp));
-        this->parent_->get_aircon_manual()->action_set_mode(AirconMode::AUTO);
+        this->parent_->get_aircon_manual()->action_set_mode(
+            AirconMode::AC_COOLING, AirconOperation::AUTO);
         break;
 
       case climate::CLIMATE_MODE_FAN_ONLY:
-        this->parent_->get_aircon_manual()->action_set_mode(AirconMode::VENTILATION);
+        this->parent_->get_aircon_manual()->action_set_mode(
+            AirconMode::AC_VENTILATION, AirconOperation::AC_ONLY);
         break;
-
+        
       default:
         break;
     }

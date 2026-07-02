@@ -71,7 +71,7 @@ bool TrumaiNetBoxAppAirconManual::action_set_temp(uint8_t temperature) {
   return true;
 }
 
-bool TrumaiNetBoxAppAirconManual::action_set_mode(AirconMode mode) {
+bool TrumaiNetBoxAppAirconManual::action_set_mode(AirconMode mode, AirconOperation operation) {
   if (!this->can_update()) {
     ESP_LOGW(TAG, "Cannot update Truma aircon.");
     return false;
@@ -79,7 +79,8 @@ bool TrumaiNetBoxAppAirconManual::action_set_mode(AirconMode mode) {
 
   auto update_data = this->update_prepare();
   update_data->mode = mode;
-
+  update_data->operation = operation;
+  
   if (mode == AirconMode::OFF) {
     update_data->target_temp_aircon = TargetTemp::TARGET_TEMP_OFF;
   }
