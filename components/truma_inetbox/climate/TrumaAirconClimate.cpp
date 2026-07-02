@@ -91,6 +91,11 @@ void TrumaAirconClimate::setup() {
 void TrumaAirconClimate::dump_config() { LOG_CLIMATE(TAG, "Truma Aircon Climate", this); }
 
 void TrumaAirconClimate::control(const climate::ClimateCall &call) {
+  ESP_LOGI(TAG, "AIRCON CONTROL called: mode=%s temp=%s fan=%s",
+    call.get_mode().has_value() ? "yes" : "no",
+    call.get_target_temperature().has_value() ? "yes" : "no",
+    call.get_fan_mode().has_value() ? "yes" : "no");
+
   float temp = this->target_temperature;
 
   if (std::isnan(temp) || temp < 16) {
@@ -119,6 +124,7 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
     switch (mode) {
       case climate::CLIMATE_MODE_OFF:
         this->parent_->get_aircon_manual()->action_set_mode(AirconMode::OFF);
+        ESP_LOGI(TAG, "AIRCON CONTROL: OFF requested");
         break;
 
       case climate::CLIMATE_MODE_COOL:
@@ -143,7 +149,7 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
         this->parent_->get_aircon_manual()->action_set_mode(
             AirconMode::AC_VENTILATION, AirconOperation::AC_ONLY);
         break;
-        
+
       default:
         break;
     }
