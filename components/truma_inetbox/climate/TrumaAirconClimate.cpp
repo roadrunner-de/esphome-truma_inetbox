@@ -139,6 +139,33 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
     }
   }
 
+  if (call.get_fan_mode().has_value()) {
+    auto fan = *call.get_fan_mode();
+
+    switch (fan) {
+      case climate::CLIMATE_FAN_LOW:
+        this->parent_->get_aircon_manual()->action_set_fan(0x71);
+        break;
+      case climate::CLIMATE_FAN_MEDIUM:
+        this->parent_->get_aircon_manual()->action_set_fan(0x72);
+        break;
+      case climate::CLIMATE_FAN_HIGH:
+        this->parent_->get_aircon_manual()->action_set_fan(0x73);
+        break;
+      case climate::CLIMATE_FAN_QUIET:
+        this->parent_->get_aircon_manual()->action_set_fan(0x74);
+        break;
+      case climate::CLIMATE_FAN_AUTO:
+        this->parent_->get_aircon_manual()->action_set_fan(0x77);
+        break;
+      case climate::CLIMATE_FAN_OFF:
+        this->parent_->get_aircon_manual()->action_set_mode(AirconMode::OFF, 0, AirconOperation::AC_ONLY);
+        break;
+      default:
+        break;
+    }
+  }
+
   if (call.get_mode().has_value()) {
     climate::ClimateMode mode = *call.get_mode();
 

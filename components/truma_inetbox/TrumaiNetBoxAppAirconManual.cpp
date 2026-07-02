@@ -92,5 +92,17 @@ if (mode == AirconMode::OFF || temperature < 16) {
   return true;
 }
 
+bool TrumaiNetBoxAppAirconManual::action_set_fan(uint8_t operation) {
+  if (!this->can_update()) {
+    ESP_LOGW(TAG, "Cannot update Truma aircon.");
+    return false;
+  }
+
+  auto update_data = this->update_prepare();
+  update_data->operation = static_cast<AirconOperation>(operation);
+
+  this->update_submit();
+  return true;
+}
 }  // namespace truma_inetbox
 }  // namespace esphome
