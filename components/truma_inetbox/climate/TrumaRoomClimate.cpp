@@ -71,6 +71,11 @@ void TrumaRoomClimate::control(const climate::ClimateCall &call) {
 
   if (call.get_fan_mode().has_value()) {
     auto fan_mode = *call.get_fan_mode();
+    if (this->mode == climate::CLIMATE_MODE_HEAT_COOL) {
+      this->fan_mode = climate::CLIMATE_FAN_AUTO;
+      this->publish_state();
+      return;
+    }
     auto status_heater = this->parent_->get_heater()->get_status();
     float temp = temp_code_to_decimal(status_heater->target_temp_room, 0);
     if (call.get_target_temperature().has_value()) {
