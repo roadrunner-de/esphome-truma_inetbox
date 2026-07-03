@@ -142,20 +142,28 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
 
   if (call.get_fan_mode().has_value()) {
     auto fan = *call.get_fan_mode();
+
     AirconMode aircon_mode = AirconMode::AC_COOLING;
+
     switch (this->mode) {
       case climate::CLIMATE_MODE_HEAT:
         aircon_mode = static_cast<AirconMode>(0x06);
         break;
+
       case climate::CLIMATE_MODE_HEAT_COOL:
         aircon_mode = static_cast<AirconMode>(0x07);
         break;
+
       case climate::CLIMATE_MODE_FAN_ONLY:
         aircon_mode = AirconMode::AC_VENTILATION;
         break;
+
       case climate::CLIMATE_MODE_OFF:
-        aircon_mode = AirconMode::OFF;
+        // Wenn aus OFF heraus nur eine Lüfterstufe gewählt wird,
+        // soll die Saphir in den Lüfterbetrieb starten.
+        aircon_mode = AirconMode::AC_VENTILATION;
         break;
+
       case climate::CLIMATE_MODE_COOL:
       default:
         aircon_mode = AirconMode::AC_COOLING;
@@ -166,18 +174,29 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
       case climate::CLIMATE_FAN_LOW:
         this->parent_->get_aircon_manual()->action_set_fan(aircon_mode, static_cast<uint8_t>(temp), 0x71);
         break;
+
       case climate::CLIMATE_FAN_MEDIUM:
         this->parent_->get_aircon_manual()->action_set_fan(aircon_mode, static_cast<uint8_t>(temp), 0x72);
         break;
+
       case climate::CLIMATE_FAN_HIGH:
         this->parent_->get_aircon_manual()->action_set_fan(aircon_mode, static_cast<uint8_t>(temp), 0x73);
         break;
+
       case climate::CLIMATE_FAN_QUIET:
-        this->parent_->get_aircon_manual()->action_set_fan(aircon_mode, static_cast<uint8_t>(temp), 0x74);
+        // QUIET wird im FAN_ONLY-Modus nicht akzeptiert.
+        // Sicherer Fallback: LOW.
+        if (aircon_mode == AirconMode::AC_VENTILATION) {
+          this->parent_->get_aircon_manual()->action_set_fan(aircon_mode, static_cast<uint8_t>(temp), 0x71);
+        } else {
+          this->parent_->get_aircon_manual()->action_set_fan(aircon_mode, static_cast<uint8_t>(temp), 0x74);
+        }
         break;
+
       case climate::CLIMATE_FAN_OFF:
         this->parent_->get_aircon_manual()->action_set_mode(AirconMode::OFF, 0, AirconOperation::AC_ONLY);
         break;
+
       default:
         break;
     }
