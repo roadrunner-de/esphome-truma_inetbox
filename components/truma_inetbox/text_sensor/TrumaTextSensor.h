@@ -1,81 +1,41 @@
 #pragma once
 
 #include "esphome/core/log.h"
-#include "esphome/components/sensor/sensor.h"
+#include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/components/truma_inetbox/TrumaiNetBoxApp.h"
 
 namespace esphome {
 namespace truma_inetbox {
-enum class TRUMA_SENSOR_TYPE {
-  UNKNOWN,
-  CURRENT_ROOM_TEMPERATURE,
-  CURRENT_WATER_TEMPERATURE,
-  TARGET_ROOM_TEMPERATURE,
-  TARGET_WATER_TEMPERATURE,
-  HEATING_MODE,
-  ELECTRIC_POWER_LEVEL,
-  ENERGY_MIX,
-  OPERATING_STATUS,
-  HEATER_ERROR_CODE,
-  AIRCON_CURRENT_TEMPERATURE,
 
-  AIRCON_TARGET_TEMPERATURE,
+enum class TRUMA_TEXT_SENSOR_TYPE {
+  UNKNOWN,
+  AIRCON_MODE,
+  AIRCON_FAN_MODE,
 };
 
 #ifdef ESPHOME_LOG_HAS_CONFIG
-static const char *enum_to_c_str(const TRUMA_SENSOR_TYPE val) {
+static const char *enum_to_c_str(const TRUMA_TEXT_SENSOR_TYPE val) {
   switch (val) {
-    case TRUMA_SENSOR_TYPE::CURRENT_ROOM_TEMPERATURE:
-      return "CURRENT_ROOM_TEMPERATURE";
-      break;
-    case TRUMA_SENSOR_TYPE::CURRENT_WATER_TEMPERATURE:
-      return "CURRENT_WATER_TEMPERATURE";
-      break;
-    case TRUMA_SENSOR_TYPE::TARGET_ROOM_TEMPERATURE:
-      return "TARGET_ROOM_TEMPERATURE";
-      break;
-    case TRUMA_SENSOR_TYPE::TARGET_WATER_TEMPERATURE:
-      return "TARGET_WATER_TEMPERATURE";
-      break;
-    case TRUMA_SENSOR_TYPE::HEATING_MODE:
-      return "HEATING_MODE";
-      break;
-    case TRUMA_SENSOR_TYPE::ELECTRIC_POWER_LEVEL:
-      return "ELECTRIC_POWER_LEVEL";
-      break;
-    case TRUMA_SENSOR_TYPE::ENERGY_MIX:
-      return "ENERGY_MIX";
-      break;
-    case TRUMA_SENSOR_TYPE::OPERATING_STATUS:
-      return "OPERATING_STATUS";
-      break;
-    case TRUMA_SENSOR_TYPE::HEATER_ERROR_CODE:
-      return "HEATER_ERROR_CODE";
-      break;
-    case TRUMA_SENSOR_TYPE::AIRCON_CURRENT_TEMPERATURE:
-      return "AIRCON_CURRENT_TEMPERATURE";
-      break;
-    case TRUMA_SENSOR_TYPE::AIRCON_TARGET_TEMPERATURE:
-      return "AIRCON_TARGET_TEMPERATURE";
-      break;
+    case TRUMA_TEXT_SENSOR_TYPE::AIRCON_MODE:
+      return "AIRCON_MODE";
+    case TRUMA_TEXT_SENSOR_TYPE::AIRCON_FAN_MODE:
+      return "AIRCON_FAN_MODE";
     default:
       return "";
-      break;
   }
 }
-#endif // ESPHOME_LOG_HAS_CONFIG
+#endif
 
-class TrumaSensor : public Component, public sensor::Sensor, public Parented<TrumaiNetBoxApp> {
+class TrumaTextSensor : public Component, public text_sensor::TextSensor, public Parented<TrumaiNetBoxApp> {
  public:
   void setup() override;
   void dump_config() override;
 
-  void set_type(TRUMA_SENSOR_TYPE val) { this->type_ = val; }
+  void set_type(TRUMA_TEXT_SENSOR_TYPE val) { this->type_ = val; }
 
  protected:
-  TRUMA_SENSOR_TYPE type_;
-
- private:
+  TRUMA_TEXT_SENSOR_TYPE type_{TRUMA_TEXT_SENSOR_TYPE::UNKNOWN};
 };
+
 }  // namespace truma_inetbox
 }  // namespace esphome

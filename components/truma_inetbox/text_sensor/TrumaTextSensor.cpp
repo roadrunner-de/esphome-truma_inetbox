@@ -64,7 +64,7 @@ void TrumaTextSensor::setup() {
 }
 
 void TrumaTextSensor::dump_config() {
-  LOG_TEXT_SENSOR("", "Truma Text Sensor", this);
+  ESP_LOGCONFIG(TAG, "Truma Text Sensor");
   ESP_LOGCONFIG(TAG, "  Type '%s'", enum_to_c_str(this->type_));
 }
 
