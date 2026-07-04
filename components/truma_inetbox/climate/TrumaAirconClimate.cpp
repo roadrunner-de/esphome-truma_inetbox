@@ -59,7 +59,7 @@ void TrumaAirconClimate::setup() {
           this->fan_mode = climate::CLIMATE_FAN_HIGH;
           break;
         case 0x74:
-          this->fan_mode = climate::CLIMATE_FAN_QUIET;
+          this->fan_mode = climate::CLIMATE_FAN_LOW;
           break;
         case 0x77:
           this->fan_mode = climate::CLIMATE_FAN_AUTO;
@@ -171,6 +171,14 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
     }
 
     switch (fan) {
+      case climate::CLIMATE_FAN_AUTO:
+        if (aircon_mode == static_cast<AirconMode>(0x07)) {
+          this->parent_->get_aircon_manual()->action_set_fan(aircon_mode, static_cast<uint8_t>(temp), 0x77);
+        } else if (aircon_mode == AirconMode::AC_VENTILATION) {
+          this->parent_->get_aircon_manual()->action_set_fan(aircon_mode, static_cast<uint8_t>(temp), 0x71);
+        }
+        break;
+
       case climate::CLIMATE_FAN_LOW:
         this->parent_->get_aircon_manual()->action_set_fan(aircon_mode, static_cast<uint8_t>(temp), 0x71);
         break;
@@ -181,16 +189,6 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
 
       case climate::CLIMATE_FAN_HIGH:
         this->parent_->get_aircon_manual()->action_set_fan(aircon_mode, static_cast<uint8_t>(temp), 0x73);
-        break;
-
-      case climate::CLIMATE_FAN_QUIET:
-        // QUIET wird im FAN_ONLY-Modus nicht akzeptiert.
-        // Sicherer Fallback: LOW.
-        if (aircon_mode == AirconMode::AC_VENTILATION) {
-          this->parent_->get_aircon_manual()->action_set_fan(aircon_mode, static_cast<uint8_t>(temp), 0x71);
-        } else {
-          this->parent_->get_aircon_manual()->action_set_fan(aircon_mode, static_cast<uint8_t>(temp), 0x74);
-        }
         break;
 
       case climate::CLIMATE_FAN_OFF:
@@ -264,7 +262,6 @@ climate::ClimateTraits TrumaAirconClimate::traits() {
       climate::CLIMATE_FAN_LOW,
       climate::CLIMATE_FAN_MEDIUM,
       climate::CLIMATE_FAN_HIGH,
-      climate::CLIMATE_FAN_QUIET,
     });
   }
 
