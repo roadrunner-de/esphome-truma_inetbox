@@ -23,6 +23,12 @@ CONF_SUPPORTED_TYPE = {
     "AIRCON_FAN_MODE": {
         CONF_CLASS: TRUMA_TEXT_SENSOR_TYPE_dummy_ns.AIRCON_FAN_MODE,
     },
+    "DEVICE_0_INDEX": {
+        CONF_CLASS: TRUMA_TEXT_SENSOR_TYPE_dummy_ns.DEVICE_0_INDEX,
+    },
+    "DEVICE_1_INDEX": {
+        CONF_CLASS: TRUMA_TEXT_SENSOR_TYPE_dummy_ns.DEVICE_1_INDEX,
+    },
 }
 
 CONFIG_SCHEMA = text_sensor.text_sensor_schema().extend(

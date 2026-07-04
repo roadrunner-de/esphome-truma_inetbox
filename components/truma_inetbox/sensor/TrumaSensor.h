@@ -18,8 +18,8 @@ enum class TRUMA_SENSOR_TYPE {
   OPERATING_STATUS,
   HEATER_ERROR_CODE,
   AIRCON_CURRENT_TEMPERATURE,
-
   AIRCON_TARGET_TEMPERATURE,
+  CONFIG_TEMP_OFFSET,
 };
 
 #ifdef ESPHOME_LOG_HAS_CONFIG
@@ -57,6 +57,9 @@ static const char *enum_to_c_str(const TRUMA_SENSOR_TYPE val) {
       break;
     case TRUMA_SENSOR_TYPE::AIRCON_TARGET_TEMPERATURE:
       return "AIRCON_TARGET_TEMPERATURE";
+      break;
+    case TRUMA_SENSOR_TYPE::CONFIG_TEMP_OFFSET:
+      return "CONFIG_TEMP_OFFSET";
       break;
     default:
       return "";

@@ -195,6 +195,13 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
         this->parent_->get_aircon_manual()->action_set_mode(AirconMode::OFF, 0, AirconOperation::AC_ONLY);
         break;
 
+      case climate::CLIMATE_FAN_QUIET:
+        this->parent_->get_aircon_manual()->action_set_fan(
+            aircon_mode,
+            static_cast<uint8_t>(temp),
+            0x71);
+        break;
+
       default:
         break;
     }
@@ -259,9 +266,11 @@ climate::ClimateTraits TrumaAirconClimate::traits() {
   } else {
     traits.set_supported_fan_modes({
       climate::CLIMATE_FAN_OFF,
+      climate::CLIMATE_FAN_AUTO,
       climate::CLIMATE_FAN_LOW,
       climate::CLIMATE_FAN_MEDIUM,
       climate::CLIMATE_FAN_HIGH,
+      climate::CLIMATE_FAN_QUIET,
     });
   }
 
