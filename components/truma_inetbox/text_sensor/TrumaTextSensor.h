@@ -11,6 +11,8 @@ enum class TRUMA_TEXT_SENSOR_TYPE {
   UNKNOWN,
   AIRCON_MODE,
   AIRCON_FAN_MODE,
+  DEVICE_0_INDEX,
+  DEVICE_1_INDEX,
 };
 
 #ifdef ESPHOME_LOG_HAS_CONFIG
@@ -20,6 +22,10 @@ static const char *enum_to_c_str(const TRUMA_TEXT_SENSOR_TYPE val) {
       return "AIRCON_MODE";
     case TRUMA_TEXT_SENSOR_TYPE::AIRCON_FAN_MODE:
       return "AIRCON_FAN_MODE";
+    case TRUMA_TEXT_SENSOR_TYPE::DEVICE_0_INDEX:
+      return "DEVICE_0_INDEX";
+    case TRUMA_TEXT_SENSOR_TYPE::DEVICE_1_INDEX:
+      return "DEVICE_1_INDEX";
     default:
       return "";
   }
