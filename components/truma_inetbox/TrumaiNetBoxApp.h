@@ -8,10 +8,11 @@
 #include "TrumaiNetBoxAppConfig.h"
 #include "TrumaiNetBoxAppHeater.h"
 #include "TrumaiNetBoxAppTimer.h"
+#include "esphome/core/helpers.h"
 
 #ifdef USE_TIME
 #include "esphome/components/time/real_time_clock.h"
-#endif  // USE_TIME
+#endif
 
 namespace esphome {
 namespace truma_inetbox {
@@ -37,24 +38,28 @@ class TrumaiNetBoxApp : public LinBusProtocol {
   TrumaiNetBoxAppHeater *get_heater() { return &this->heater_; }
   TrumaiNetBoxAppTimer *get_timer() { return &this->timer_; }
 
+  template<typename F> void add_on_device_callback(F &&callback) {
+    this->device_callback_.add(std::forward<F>(callback));
+  }
+
   int64_t get_last_cp_plus_request() { return this->device_registered_; }
 
 #ifdef USE_TIME
   void set_time(time::RealTimeClock *time) { time_ = time; }
   time::RealTimeClock *get_time() const { return time_; }
-#endif  // USE_TIME
+#endif
 
  protected:
-  // Truma CP Plus needs init (reset). This device is not registered.
   uint32_t device_registered_ = 0;
   uint32_t init_requested_ = 0;
   uint32_t init_recieved_ = 0;
   uint8_t message_counter = 1;
 
-  // Truma heater conected to CP Plus.
   TRUMA_COMPANY company_ = TRUMA_COMPANY::TRUMA;
   TRUMA_DEVICE heater_device_ = TRUMA_DEVICE::UNKNOWN;
   TRUMA_DEVICE aircon_device_ = TRUMA_DEVICE::UNKNOWN;
+
+  CallbackManager<void(const StatusFrameDevice *)> device_callback_{};
 
   TrumaiNetBoxAppAirconAuto airconAuto_;
   TrumaiNetBoxAppAirconManual airconManual_;
@@ -63,15 +68,12 @@ class TrumaiNetBoxApp : public LinBusProtocol {
   TrumaiNetBoxAppHeater heater_;
   TrumaiNetBoxAppTimer timer_;
 
-  // last time CP plus was informed I got an update msg.
   uint32_t update_time_ = 0;
 
 #ifdef USE_TIME
   time::RealTimeClock *time_ = nullptr;
-
-  // Mark if the initial clock sync was done.
   bool update_status_clock_done = false;
-#endif  // USE_TIME
+#endif
 
   bool answer_lin_order_(const uint8_t pid) override;
 
