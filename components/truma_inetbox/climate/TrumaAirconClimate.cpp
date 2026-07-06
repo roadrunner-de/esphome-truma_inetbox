@@ -7,6 +7,7 @@ namespace truma_inetbox {
 static const char *const TAG = "truma_inetbox.aircon_climate";
 void TrumaAirconClimate::setup() {
   ESP_LOGI(TAG, "===== AIRCON SETUP CALLED =====");
+  this->temperature_offset_ = this->parent_->get_config()->get_temp_offset();
   this->parent_->get_aircon_manual()->add_on_message_callback([this](const StatusFrameAirconManual *status_aircon) {
     const uint8_t *p = reinterpret_cast<const uint8_t *>(status_aircon);
 
@@ -17,10 +18,11 @@ void TrumaAirconClimate::setup() {
     (static_cast<uint16_t>(p[9]) << 8) | p[8];
 
     // Publish updated state
+    this->temperature_offset_ = this->parent_->get_config()->get_temp_offset();
     if (target_raw == 0) {
       this->target_temperature = NAN;
     } else {
-      this->target_temperature = (target_raw / 10.0f) - 273.0f;
+      this->target_temperature = ((target_raw / 10.0f) - 273.0f) + this->temperature_offset_;
     }
     this->current_temperature = (current_raw / 10.0f) - 273.0f;
 
@@ -96,7 +98,7 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
     call.get_target_temperature().has_value() ? "yes" : "no",
     call.get_fan_mode().has_value() ? "yes" : "no");
 */
-
+  this->temperature_offset_ = this->parent_->get_config()->get_temp_offset();
   float temp = this->target_temperature;
 
   if (std::isnan(temp) || temp < 16) {
@@ -116,26 +118,34 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
       temp = 30;
     }
 
+    float device_temp = temp - this->temperature_offset_;
+    if (device_temp < 16) {
+      device_temp = 16;
+    }
+    if (device_temp > 30) {
+      device_temp = 30;
+    }
+
     switch (this->mode) {
       case climate::CLIMATE_MODE_HEAT:
         this->parent_->get_aircon_manual()->action_set_mode(
-            static_cast<AirconMode>(0x06), static_cast<uint8_t>(temp), AirconOperation::AC_ONLY);
+            static_cast<AirconMode>(0x06), static_cast<uint8_t>(device_temp), AirconOperation::AC_ONLY);
         break;
 
       case climate::CLIMATE_MODE_HEAT_COOL:
         this->parent_->get_aircon_manual()->action_set_mode(
-            static_cast<AirconMode>(0x07), static_cast<uint8_t>(temp), static_cast<AirconOperation>(0x77));
+            static_cast<AirconMode>(0x07), static_cast<uint8_t>(device_temp), static_cast<AirconOperation>(0x77));
         break;
 
       case climate::CLIMATE_MODE_FAN_ONLY:
         this->parent_->get_aircon_manual()->action_set_mode(
-            AirconMode::AC_VENTILATION, static_cast<uint8_t>(temp), AirconOperation::AC_ONLY);
+            AirconMode::AC_VENTILATION, static_cast<uint8_t>(device_temp), AirconOperation::AC_ONLY);
         break;
 
       case climate::CLIMATE_MODE_COOL:
       default:
         this->parent_->get_aircon_manual()->action_set_mode(
-            AirconMode::AC_COOLING, static_cast<uint8_t>(temp), AirconOperation::AC_ONLY);
+            AirconMode::AC_COOLING, static_cast<uint8_t>(device_temp), AirconOperation::AC_ONLY);
         break;
     }
   }
@@ -170,6 +180,14 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
         break;
     }
 
+    float device_temp = temp - this->temperature_offset_;
+    if (device_temp < 16) {
+      device_temp = 16;
+    }
+    if (device_temp > 30) {
+      device_temp = 30;
+    }
+
     switch (fan) {
       case climate::CLIMATE_FAN_AUTO:
         if (aircon_mode == static_cast<AirconMode>(0x07)) {
@@ -196,10 +214,9 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
         break;
 
       case climate::CLIMATE_FAN_QUIET:
-        this->parent_->get_aircon_manual()->action_set_fan(
-            aircon_mode,
-            static_cast<uint8_t>(temp),
-            0x71);
+        if (aircon_mode == AirconMode::AC_COOLING) {
+          this->parent_->get_aircon_manual()->action_set_fan(aircon_mode, static_cast<uint8_t>(device_temp), 0x74);
+        }
         break;
 
       default:
@@ -210,6 +227,14 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
   if (call.get_mode().has_value()) {
     climate::ClimateMode mode = *call.get_mode();
 
+    float device_temp = temp - this->temperature_offset_;
+    if (device_temp < 16) {
+      device_temp = 16;
+    }
+    if (device_temp > 30) {
+      device_temp = 30;
+    }
+
     switch (mode) {
       case climate::CLIMATE_MODE_OFF:
         this->parent_->get_aircon_manual()->action_set_mode(AirconMode::OFF, 0);
@@ -218,24 +243,24 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
 
       case climate::CLIMATE_MODE_COOL:
         this->parent_->get_aircon_manual()->action_set_mode(
-            AirconMode::AC_COOLING, static_cast<uint8_t>(temp), AirconOperation::AC_ONLY);
+            AirconMode::AC_COOLING, static_cast<uint8_t>(device_temp), AirconOperation::AC_ONLY);
         break;
 
       case climate::CLIMATE_MODE_HEAT:
         this->parent_->get_aircon_manual()->action_set_mode(
-            static_cast<AirconMode>(0x06), static_cast<uint8_t>(temp), AirconOperation::AC_ONLY);
+            static_cast<AirconMode>(0x06), static_cast<uint8_t>(device_temp), AirconOperation::AC_ONLY);
         break;
 
       case climate::CLIMATE_MODE_HEAT_COOL:
         this->parent_->get_aircon_manual()->action_set_mode(
             static_cast<AirconMode>(0x07),
-            static_cast<uint8_t>(temp),
+            static_cast<uint8_t>(device_temp),
             static_cast<AirconOperation>(0x77));
         break;
 
       case climate::CLIMATE_MODE_FAN_ONLY:
         this->parent_->get_aircon_manual()->action_set_mode(
-            AirconMode::AC_VENTILATION, static_cast<uint8_t>(temp), AirconOperation::AC_ONLY);
+            AirconMode::AC_VENTILATION, static_cast<uint8_t>(device_temp), AirconOperation::AC_ONLY);
         break;
 
       default:
@@ -258,20 +283,34 @@ climate::ClimateTraits TrumaAirconClimate::traits() {
     climate::CLIMATE_MODE_HEAT_COOL,
   });
 
-  if (this->mode == climate::CLIMATE_MODE_HEAT_COOL) {
+  switch (this->mode) {
+  case climate::CLIMATE_MODE_HEAT_COOL:
     traits.set_supported_fan_modes({
-      climate::CLIMATE_FAN_OFF,
-      climate::CLIMATE_FAN_AUTO,
+        climate::CLIMATE_FAN_AUTO,
     });
-  } else {
+    break;
+  case climate::CLIMATE_MODE_COOL:
     traits.set_supported_fan_modes({
-      climate::CLIMATE_FAN_OFF,
-      climate::CLIMATE_FAN_AUTO,
-      climate::CLIMATE_FAN_LOW,
-      climate::CLIMATE_FAN_MEDIUM,
-      climate::CLIMATE_FAN_HIGH,
-      climate::CLIMATE_FAN_QUIET,
+        climate::CLIMATE_FAN_LOW,
+        climate::CLIMATE_FAN_MEDIUM,
+        climate::CLIMATE_FAN_HIGH,
+        climate::CLIMATE_FAN_QUIET,
     });
+    break;
+  case climate::CLIMATE_MODE_HEAT:
+  case climate::CLIMATE_MODE_FAN_ONLY:
+    traits.set_supported_fan_modes({
+        climate::CLIMATE_FAN_LOW,
+        climate::CLIMATE_FAN_MEDIUM,
+        climate::CLIMATE_FAN_HIGH,
+    });
+    break;
+  case climate::CLIMATE_MODE_OFF:
+  default:
+    traits.set_supported_fan_modes({
+        climate::CLIMATE_FAN_OFF,
+    });
+    break;
   }
 
   // traits.set_supported_presets({{
