@@ -40,6 +40,44 @@ static const char *aircon_fan_mode_to_text(uint8_t fan_mode) {
   }
 }
 
+static char truma_device_prefix(const StatusFrameDevice *device) {
+  if (device->device_id == 0) {
+    return 'C';
+  }
+
+  if (device->hardware_revision_major == 0x0C05) {
+    return 'A';
+  }
+
+  switch (device->software_revision[0]) {
+    case 0x00:
+      return 'A';
+    case 0x04:
+      return 'C';
+    case 0x05:
+      return 'P';
+    case 0x06:
+      return 'H';
+    default:
+      return '?';
+  }
+}
+
+static std::string truma_device_index_to_text(const StatusFrameDevice *device) {
+  char buffer[20];
+
+  snprintf(
+      buffer,
+      sizeof(buffer),
+      "%c%u.%02u.%02u",
+      truma_device_prefix(device),
+      device->software_revision[0],
+      device->software_revision[1],
+      device->software_revision[2]);
+
+  return std::string(buffer);
+}
+
 void TrumaTextSensor::setup() {
   this->parent_->get_aircon_manual()->add_on_message_callback([this](const StatusFrameAirconManual *status_aircon) {
     const uint8_t *p = reinterpret_cast<const uint8_t *>(status_aircon);
@@ -54,6 +92,25 @@ void TrumaTextSensor::setup() {
           this->publish_state("OFF");
         } else {
           this->publish_state(aircon_fan_mode_to_text(p[2]));
+        }
+        break;
+
+      default:
+        break;
+    }
+  });
+
+  this->parent_->add_on_device_callback([this](const StatusFrameDevice *device) {
+    switch (this->type_) {
+      case TRUMA_TEXT_SENSOR_TYPE::DEVICE_0_INDEX:
+        if (device->device_id == 0) {
+          this->publish_state(truma_device_index_to_text(device));
+        }
+        break;
+
+      case TRUMA_TEXT_SENSOR_TYPE::DEVICE_1_INDEX:
+        if (device->device_id == 1) {
+          this->publish_state(truma_device_index_to_text(device));
         }
         break;
 

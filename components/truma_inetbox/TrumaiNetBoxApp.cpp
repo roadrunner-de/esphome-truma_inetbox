@@ -359,7 +359,7 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
     // BB.00.1F.00.1E.00.00.22.FF.FF.FF.54.01.0C.0B.00.C7.03.00.01.00.50.00.00.04.03.00.60.10
     // BB.00.1F.00.1E.00.00.22.FF.FF.FF.54.01.0C.0B.00.71.03.01.01.00.10.03.02.06.00.02.00.00
     // BB.00.1F.00.1E.00.00.22.FF.FF.FF.54.01.0C.0B.00.7C.03.02.01.00.01.0C.00.01.02.01.00.00
-    auto device = statusFrame->device;
+    this->device_callback_.call(&statusFrame->device);
     ESP_LOGI(TAG,
          "DEBUG device: id=%u count=%u sw=%02X.%02X.%02X hw=%04X.%02X unk1=%02X unk2=%02X unk3=%02X",
          device.device_id,
