@@ -11,7 +11,7 @@ void TrumaRoomClimate::setup() {
     this->target_temperature = temp_code_to_decimal(status_heater->target_temp_room);
     this->current_temperature = temp_code_to_decimal(status_heater->current_temp_room);
     this->mode = std::isnan(this->target_temperature) ? climate::CLIMATE_MODE_OFF : climate::CLIMATE_MODE_HEAT;
-
+    
     switch (status_heater->heating_mode) {
       case HeatingMode::HEATING_MODE_ECO:
         this->fan_mode = climate::CLIMATE_FAN_LOW;
