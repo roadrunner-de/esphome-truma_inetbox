@@ -91,13 +91,11 @@ void TrumaAirconClimate::setup() {
 
 void TrumaAirconClimate::dump_config() {
   LOG_CLIMATE(TAG, "Truma Aircon Climate", this);
-  ESP_LOGCONFIG(TAG, "Temperature offset: %.1f °C",
-                this->temperature_offset_);
+  ESP_LOGCONFIG(TAG, "Temperature offset: %.1f °C", this->temperature_offset_);
 }
 
 void TrumaAirconClimate::control(const climate::ClimateCall &call) {
-  this->temperature_offset_ =
-      this->parent_->get_config()->get_temp_offset();
+  this->temperature_offset_ = this->parent_->get_config()->get_temp_offset();
 
   float temp = this->target_temperature;
 
@@ -164,8 +162,6 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
         aircon_mode = static_cast<AirconMode>(0x07);
         break;
       case climate::CLIMATE_MODE_FAN_ONLY:
-        aircon_mode = AirconMode::AC_VENTILATION;
-        break;
       case climate::CLIMATE_MODE_OFF:
         aircon_mode = AirconMode::AC_VENTILATION;
         break;
@@ -179,53 +175,41 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
       case climate::CLIMATE_FAN_AUTO:
         if (aircon_mode == static_cast<AirconMode>(0x07)) {
           this->parent_->get_aircon_manual()->action_set_fan(
-              aircon_mode,
-              static_cast<uint8_t>(device_temp),
-              0x77);
+              aircon_mode, static_cast<uint8_t>(device_temp), 0x77);
         }
         break;
 
       case climate::CLIMATE_FAN_LOW:
         if (aircon_mode != static_cast<AirconMode>(0x07)) {
           this->parent_->get_aircon_manual()->action_set_fan(
-              aircon_mode,
-              static_cast<uint8_t>(device_temp),
-              0x71);
+              aircon_mode, static_cast<uint8_t>(device_temp), 0x71);
         }
         break;
 
       case climate::CLIMATE_FAN_MEDIUM:
         if (aircon_mode != static_cast<AirconMode>(0x07)) {
           this->parent_->get_aircon_manual()->action_set_fan(
-              aircon_mode,
-              static_cast<uint8_t>(device_temp),
-              0x72);
+              aircon_mode, static_cast<uint8_t>(device_temp), 0x72);
         }
         break;
 
       case climate::CLIMATE_FAN_HIGH:
         if (aircon_mode != static_cast<AirconMode>(0x07)) {
           this->parent_->get_aircon_manual()->action_set_fan(
-              aircon_mode,
-              static_cast<uint8_t>(device_temp),
-              0x73);
+              aircon_mode, static_cast<uint8_t>(device_temp), 0x73);
         }
         break;
 
       case climate::CLIMATE_FAN_QUIET:
         if (aircon_mode == AirconMode::AC_COOLING) {
           this->parent_->get_aircon_manual()->action_set_fan(
-              aircon_mode,
-              static_cast<uint8_t>(device_temp),
-              0x74);
+              aircon_mode, static_cast<uint8_t>(device_temp), 0x74);
         }
         break;
 
       case climate::CLIMATE_FAN_OFF:
         this->parent_->get_aircon_manual()->action_set_mode(
-            AirconMode::OFF,
-            0,
-            AirconOperation::AC_ONLY);
+            AirconMode::OFF, 0, AirconOperation::AC_ONLY);
         break;
 
       default:
@@ -239,8 +223,7 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
     switch (mode) {
       case climate::CLIMATE_MODE_OFF:
         this->parent_->get_aircon_manual()->action_set_mode(
-            AirconMode::OFF,
-            0);
+            AirconMode::OFF, 0);
         ESP_LOGI(TAG, "AIRCON CONTROL: OFF requested");
         break;
 
