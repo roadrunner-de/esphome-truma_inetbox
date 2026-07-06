@@ -13,7 +13,7 @@ TrumaiNetBoxApp::TrumaiNetBoxApp() {
   this->airconAuto_.set_parent(this);
   this->airconManual_.set_parent(this);
   this->clock_.set_parent(this);
-  // this->config_.set_parent(this);
+  this->config_.set_parent(this);
   this->heater_.set_parent(this);
   this->timer_.set_parent(this);
 }
@@ -155,6 +155,11 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
     } else if (this->heater_.has_update()) {
       ESP_LOGD(TAG, "Requested read: Sending heater update");
       this->heater_.create_update_data(response_frame, return_len, this->message_counter++);
+      this->update_time_ = 0;
+      return response;
+    } else if (this->config_.has_update()) {
+      ESP_LOGD(TAG, "Requested read: Sending config update");
+      this->config_.create_update_data(response_frame, return_len, this->message_counter++);
       this->update_time_ = 0;
       return response;
     } else if (this->timer_.has_update()) {
@@ -445,8 +450,7 @@ bool TrumaiNetBoxApp::has_update_to_submit_() {
       this->init_requested_ = micros();
       return true;
     }
-  } else if (this->airconAuto_.has_update() || this->airconManual_.has_update() || this->clock_.has_update() ||
-             this->heater_.has_update() || this->timer_.has_update()) {
+  } else if (this->airconAuto_.has_update() || this->airconManual_.has_update() || this->clock_.has_update() || this->config_.has_update() || this->heater_.has_update() || this->timer_.has_update()) {
     if (this->update_time_ == 0) {
       // ESP_LOGD(TAG, "Notify CP Plus I got updates.");
       this->update_time_ = micros();

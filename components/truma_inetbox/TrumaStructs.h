@@ -159,6 +159,18 @@ struct StatusFrameConfig {  // NOLINT(altera-struct-pack-align)
   uint8_t unknown_8;
 } __attribute__((packed));
 
+// Length 10 (0x0A)
+struct StatusFrameConfigResponse {  // NOLINT(altera-struct-pack-align)
+  uint8_t display_brightness;
+  Language language;
+  TargetTemp ac_offset;
+  TargetTemp temp_offset;
+  OperatingUnits temp_units;
+  uint8_t unknown_6;
+  uint8_t unknown_7;
+  uint8_t unknown_8;
+} __attribute__((packed));
+
 // Length 12 (0x0C)
 struct StatusFrameDevice {  // NOLINT(altera-struct-pack-align)
   uint8_t device_count;
@@ -312,6 +324,7 @@ union StatusFrame {  // NOLINT(altera-struct-pack-align)
       StatusFrameResponseAck responseAck;
       StatusFrameClock clock;
       StatusFrameConfig config;
+      StatusFrameConfigResponse configResponse;
       StatusFrameDevice device;
       StatusFrameAirconManual airconManual;
       StatusFrameAirconManualResponse airconManualResponse;
