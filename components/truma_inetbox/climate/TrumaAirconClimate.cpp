@@ -6,7 +6,7 @@ namespace truma_inetbox {
 
 static const char *const TAG = "truma_inetbox.aircon_climate";
 void TrumaAirconClimate::setup() {
-  ESP_LOGI(TAG, "===== AIRCON SETUP CALLED =====");
+  ESP_LOGD(TAG, "===== AIRCON SETUP CALLED =====");
   this->temperature_offset_ = this->parent_->get_config()->get_temp_offset();
   this->parent_->get_aircon_manual()->add_on_message_callback([this](const StatusFrameAirconManual *status_aircon) {
     const uint8_t *p = reinterpret_cast<const uint8_t *>(status_aircon);
@@ -236,7 +236,7 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
     switch (mode) {
       case climate::CLIMATE_MODE_OFF:
         this->parent_->get_aircon_manual()->action_set_mode(AirconMode::OFF, 0);
-        ESP_LOGI(TAG, "AIRCON CONTROL: OFF requested");
+        ESP_LOGD(TAG, "AIRCON CONTROL: OFF requested");
         break;
 
       case climate::CLIMATE_MODE_COOL:

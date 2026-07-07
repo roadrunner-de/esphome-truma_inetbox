@@ -42,7 +42,7 @@ void TrumaiNetBoxAppConfig::create_update_data(StatusFrame *response, uint8_t *r
 
   *response_len = sizeof(StatusFrameHeader) + sizeof(StatusFrameConfigResponse);
 
-  ESP_LOGI(TAG, "Sending config update: temp_offset %.1f °C",
+  ESP_LOGD(TAG, "Sending config update: temp_offset %.1f °C",
            temp_code_to_decimal(this->update_status_.temp_offset));
 
   TrumaStausFrameResponseStorage::update_submitted();
@@ -62,7 +62,7 @@ bool TrumaiNetBoxAppConfig::action_set_temp_offset(float offset) {
 
   this->data_.temp_offset = static_cast<TargetTemp>(raw);
 
-  ESP_LOGI(TAG, "Set local temperature offset %.1f °C, raw=%u", offset, raw);
+  ESP_LOGD(TAG, "Set local temperature offset %.1f °C, raw=%u", offset, raw);
 
   return true;
 }

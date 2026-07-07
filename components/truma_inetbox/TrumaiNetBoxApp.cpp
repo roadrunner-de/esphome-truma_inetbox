@@ -340,7 +340,7 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
     if (data.error_code != ResponseAckResult::RESPONSE_ACK_RESULT_OKAY) {
       ESP_LOGW(TAG, "StatusFrameResponseAck");
     } else {
-      ESP_LOGI(TAG, "StatusFrameResponseAck");
+      ESP_LOGD(TAG, "StatusFrameResponseAck");
     }
     ESP_LOGD(TAG, "StatusFrameResponseAck %02X %s %02X", statusFrame->genericHeader.command_counter,
              data.error_code == ResponseAckResult::RESPONSE_ACK_RESULT_OKAY ? " OKAY " : " FAILED ",
