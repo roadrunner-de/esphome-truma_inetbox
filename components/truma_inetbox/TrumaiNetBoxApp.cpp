@@ -138,7 +138,7 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
     }
   }
   if (message[4] != (uint8_t) this->company_) {
-    ESP_LOGI(TAG, "Switch company to 0x%02x", message[4]);
+    ESP_LOGD(TAG, "Switch company to 0x%02x", message[4]);
     this->company_ = (TRUMA_COMPANY) message[4];
   }
 
