@@ -28,7 +28,6 @@ namespace esphome {
     float visual_min_temperature_{5.0};
     float visual_max_temperature_{30.0};
     float visual_temperature_step_{0.5};
-    float temperature_offset_{0.0};
   };
   
   }  // namespace truma_inetbox
