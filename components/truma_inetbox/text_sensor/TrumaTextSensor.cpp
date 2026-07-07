@@ -88,12 +88,18 @@ void TrumaTextSensor::setup() {
         break;
 
       case TRUMA_TEXT_SENSOR_TYPE::AIRCON_FAN_MODE:
-        if (p[0] == 0x00) {
-          this->publish_state("OFF");
-        } else {
-          this->publish_state(aircon_fan_mode_to_text(p[2]));
-        }
-        break;
+      if (p[0] == 0x00) {
+        this->publish_state("OFF");
+      } else if (p[0] == 0x07) {
+        this->publish_state("AUTO");
+      } else if ((p[0] == 0x04 || p[0] == 0x06) && p[2] == 0x74) {
+        this->publish_state("LOW");
+      } else if (p[0] == 0x05 && p[2] == 0x77) {
+        this->publish_state("LOW");
+      } else {
+        this->publish_state(aircon_fan_mode_to_text(p[2]));
+      }
+      break;
 
       default:
         break;
