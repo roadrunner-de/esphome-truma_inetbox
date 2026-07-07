@@ -243,7 +243,7 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
         this->parent_->get_aircon_manual()->action_set_mode(
             AirconMode::AC_COOLING, static_cast<uint8_t>(device_temp), this->fan_mode.value_or(climate::CLIMATE_FAN_LOW) == climate::CLIMATE_FAN_QUIET ? static_cast<AirconOperation>(0x74) : AirconOperation::AC_ONLY);
         break;
-        
+
       case climate::CLIMATE_MODE_HEAT:
         this->parent_->get_aircon_manual()->action_set_mode(
             static_cast<AirconMode>(0x06), static_cast<uint8_t>(device_temp), AirconOperation::AC_ONLY);
@@ -251,9 +251,7 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
 
       case climate::CLIMATE_MODE_HEAT_COOL:
         this->parent_->get_aircon_manual()->action_set_mode(
-            static_cast<AirconMode>(0x07),
-            static_cast<uint8_t>(device_temp),
-            static_cast<AirconOperation>(0x77));
+            static_cast<AirconMode>(0x07), static_cast<uint8_t>(device_temp), AirconOperation::AUTO);
         break;
 
       case climate::CLIMATE_MODE_FAN_ONLY:
