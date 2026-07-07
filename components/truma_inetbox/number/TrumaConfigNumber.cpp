@@ -26,6 +26,7 @@ void TrumaConfigNumber::control(float value) {
   switch (this->type_) {
     case TRUMA_NUMBER_TYPE::CONFIG_TEMP_OFFSET:
       if (this->parent_->get_config()->action_set_temp_offset(value)) {
+        this->parent_->get_config()->update_submit();
         this->publish_state(this->parent_->get_config()->get_temp_offset());
       }
       break;
