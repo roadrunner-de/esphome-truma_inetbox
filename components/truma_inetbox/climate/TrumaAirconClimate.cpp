@@ -22,7 +22,7 @@ void TrumaAirconClimate::setup() {
     if (target_raw == 0) {
       this->target_temperature = NAN;
     } else {
-      this->target_temperature = ((target_raw / 10.0f) - 273.0f) + this->temperature_offset_;
+      this->target_temperature = ((target_raw / 10.0f) - 273.0f) - this->temperature_offset_;
     }
     this->current_temperature = (current_raw / 10.0f) - 273.0f;
 
@@ -116,7 +116,7 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
       temp = 30;
     }
 
-    float device_temp = temp - this->temperature_offset_;
+    float device_temp = temp + this->temperature_offset_;
     if (device_temp < 16) {
       device_temp = 16;
     }
@@ -178,7 +178,7 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
         break;
     }
 
-    float device_temp = temp - this->temperature_offset_;
+    float device_temp = temp + this->temperature_offset_;
     if (device_temp < 16) {
       device_temp = 16;
     }
@@ -225,7 +225,7 @@ void TrumaAirconClimate::control(const climate::ClimateCall &call) {
   if (call.get_mode().has_value()) {
     climate::ClimateMode mode = *call.get_mode();
 
-    float device_temp = temp - this->temperature_offset_;
+    float device_temp = temp + this->temperature_offset_;
     if (device_temp < 16) {
       device_temp = 16;
     }
