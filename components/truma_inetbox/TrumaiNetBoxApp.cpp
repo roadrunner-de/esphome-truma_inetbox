@@ -195,8 +195,8 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
 
   auto statusFrame = reinterpret_cast<const StatusFrame *>(message);
   auto header = &statusFrame->genericHeader;
-  ESP_LOGE(TAG, "### ROADRUNNER DEBUG BUILD ###");
-  ESP_LOGI(TAG,
+  ESP_LOGD(TAG, "### ROADRUNNER DEBUG BUILD ###");
+  ESP_LOGD(TAG,
          "DEBUG frame: sid=%02X type=%02X len=%u msg_len=%u checksum=%02X h2=%02X h3=%02X",
          message[0],
          header->message_type,
@@ -205,6 +205,7 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
          header->checksum,
          header->header_2,
          header->header_3);
+
   // Validate Truma frame checksum
   if (header->checksum != data_checksum(&statusFrame->raw[10], sizeof(StatusFrame) - 10, (0xFF - header->checksum)) ||
       header->header_2 != 'T' || header->header_3 != 0x01) {
@@ -217,7 +218,7 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
   (*return_len) = 1;
 
   if (header->message_type == STATUS_FRAME_HEATER && header->message_length == sizeof(StatusFrameHeater)) {
-    ESP_LOGI(TAG, "StatusFrameHeater");
+    ESP_LOGD(TAG, "StatusFrameHeater");
     // Example:
     // SID<---------PREAMBLE---------->|<---MSG_HEAD---->|tRoom|mo|  |elecA|tWate|elecB|mi|mi|cWate|cRoom|st|err  |  |
     // BB.00.1F.00.1E.00.00.22.FF.FF.FF.54.01.14.33.00.12.00.00.00.00.00.00.00.00.00.00.01.01.CC.0B.6C.0B.00.00.00.00
@@ -225,11 +226,11 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
     return response;
   } else if (header->message_type == STATUS_FRAME_AIRCON_MANUAL &&
              header->message_length == sizeof(StatusFrameAirconManual)) {
-    ESP_LOGI(TAG, "StatusFrameAirconManual");
-    const auto *stat = &statusFrame->airconManual;
-    const uint8_t *p = reinterpret_cast<const uint8_t *>(stat);
+    ESP_LOGD(TAG, "StatusFrameAirconManual");
+      const auto *stat = &statusFrame->airconManual;
+      const uint8_t *p = reinterpret_cast<const uint8_t *>(stat);
     
-    const bool is_saphir_tin2 =
+      const bool is_saphir_tin2 =
       this->aircon_device_ == TRUMA_DEVICE::AIRCON_DEVICE &&
       this->heater_device_ == TRUMA_DEVICE::UNKNOWN;
 
@@ -237,16 +238,17 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
       const uint16_t room_temp_raw =
           (static_cast<uint16_t>(p[9]) << 8) | p[8];
     
-    ESP_LOGI(TAG,
+      ESP_LOGD(TAG,
          "SAPHIR_TIN2 room_temp_raw=%u room_temp=%.1f",
          room_temp_raw,
          (room_temp_raw / 10.0f) - 273.0f);      
     }
 
-    ESP_LOGI(TAG,
+    ESP_LOGV(TAG,
          "%02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
          p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8],
          p[9], p[10], p[11], p[12], p[13], p[14], p[15], p[16], p[17]);
+
     // Example:
     // SID<---------PREAMBLE---------->|<---MSG_HEAD---->|
     // - ac temps form 16 - 30 C in +2 steps
@@ -271,11 +273,11 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
   } else if (header->message_type == STATUS_FRAME_AIRCON_MANUAL_INIT &&
              header->message_length == sizeof(StatusFrameAirconManualInit)) {
 
-    ESP_LOGI(TAG, "StatusFrameAirconManualInit");
+    ESP_LOGD(TAG, "StatusFrameAirconManualInit");
     const auto *stat = &statusFrame->airconManualInit;
     const uint8_t *p = reinterpret_cast<const uint8_t *>(stat);
 
-    ESP_LOGI(TAG,
+    ESP_LOGV(TAG,
     "%02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X "
     "%02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
     p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9], p[10],
@@ -287,7 +289,7 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
     return response;
   } else if (header->message_type == STATUS_FRAME_AIRCON_AUTO &&
              header->message_length == sizeof(StatusFrameAirconAuto)) {
-    ESP_LOGI(TAG, "StatusFrameAirconAuto");
+    ESP_LOGD(TAG, "StatusFrameAirconAuto");
     // Example:
     // SID<---------PREAMBLE---------->|<---MSG_HEAD---->|
     // BB.00.1F.00.1E.00.00.22.FF.FF.FF.54.01.12.37.00.BF.01.00.01.00.00.00.00.00.00.00.00.00.00.00.49.0B.40.0B
@@ -295,22 +297,23 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
     return response;
   } else if (header->message_type == STATUS_FRAME_AIRCON_AUTO_INIT &&
              header->message_length == sizeof(StatusFrameAirconAutoInit)) {
-    ESP_LOGI(TAG, "StatusFrameAirconAutoInit");
+    ESP_LOGD(TAG, "StatusFrameAirconAutoInit");
     // Example:
     // SID<---------PREAMBLE---------->|<---MSG_HEAD---->|
     // BB.00.1F.00.1E.00.00.22.FF.FF.FF.54.01.14.41.00.53.01.00.01.00.00.00.00.00.00.00.00.00.00.00.00.00.00.00.00.00
     return response;
   } else if (header->message_type == STATUS_FRAME_TIMER && header->message_length == sizeof(StatusFrameTimer)) {
-    ESP_LOGI(TAG, "StatusFrameTimer");
+    ESP_LOGD(TAG, "StatusFrameTimer");
     // EXAMPLE:
     // SID<---------PREAMBLE---------->|<---MSG_HEAD---->|tRoom|mo|??|elecA|tWate|elecB|mi|mi|<--response-->|??|??|on|start|stop-|
-    // BB.00.1F.00.1E.00.00.22.FF.FF.FF.54.01.18.3D.00.1D.18.0B.01.00.00.00.00.00.00.00.01.01.00.00.00.00.00.00.00.01.00.08.00.09
-    // BB.00.1F.00.1E.00.00.22.FF.FF.FF.54.01.18.3D.00.13.18.0B.0B.00.00.00.00.00.00.00.01.01.00.00.00.00.00.00.00.01.00.08.00.09
+    // BB.00.1F.00.1E.00.00.22.FF.FF.FF.54.01.18.3D.00.1D.18.0B.01.00.00.00.00.00.00.00.01.01.00.00.00.00.00.00.00.01.00.₀₈.₀₉
+    // BB.₀₀.₁F.₀₀.₁E.₀₀.₀₀.₂₂.FF.FF.FF.54.₀₁.₁₈.₃D.₀₀.₁₃.₁₈.₀B.₀B.₀₀.
+  
     this->timer_.set_status(statusFrame->timer);
     return response;
 
   } else if (header->message_type == STATUS_FRAME_CLOCK && header->message_length == sizeof(StatusFrameClock)) {
-    ESP_LOGI(TAG, "StatusFrameClock");
+    ESP_LOGD(TAG, "StatusFrameClock");
     // Example:
     // SID<---------PREAMBLE---------->|<---MSG_HEAD---->|
     // BB.00.1F.00.1E.00.00.22.FF.FF.FF.54.01.0A.15.00.5B.0D.20.00.01.01.00.00.01.00.00
@@ -319,7 +322,7 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
     this->clock_.set_status(statusFrame->clock);
     return response;
   } else if (header->message_type == STAUTS_FRAME_CONFIG && header->message_length == sizeof(StatusFrameConfig)) {
-    ESP_LOGI(TAG, "StatusFrameConfig");
+    ESP_LOGD(TAG, "StatusFrameConfig");
     // Example:
     // SID<---------PREAMBLE---------->|<---MSG_HEAD---->|
     // BB.00.1F.00.1E.00.00.22.FF.FF.FF.54.01.0A.17.00.0F.06.01.B4.0A.AA.0A.00.00.00.00
@@ -350,7 +353,7 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
 
     return response;
   } else if (header->message_type == STATUS_FRAME_DEVICES && header->message_length == sizeof(StatusFrameDevice)) {
-    ESP_LOGI(TAG, "StatusFrameDevice");
+    ESP_LOGD(TAG, "StatusFrameDevice");
     // This message is special. I recieve one response per registered (at CP plus) device.
     // Example:
     // SID<---------PREAMBLE---------->|<---MSG_HEAD---->|count|st|??|Hardware|Software|??|??
@@ -366,7 +369,7 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
     // BB.00.1F.00.1E.00.00.22.FF.FF.FF.54.01.0C.0B.00.7C.03.02.01.00.01.0C.00.01.02.01.00.00
     auto device = statusFrame->device;
     this->device_callback_.call(&statusFrame->device);
-    ESP_LOGI(TAG,
+    ESP_LOGD(TAG,
          "DEBUG device: id=%u count=%u sw=%02X.%02X.%02X hw=%04X.%02X unk1=%02X unk2=%02X unk3=%02X",
          device.device_id,
          device.device_count,
