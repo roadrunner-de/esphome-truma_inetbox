@@ -60,9 +60,10 @@ bool TrumaiNetBoxAppConfig::action_set_temp_offset(float offset) {
 
   const uint16_t raw = static_cast<uint16_t>(std::lround((273.0f + offset) * 10.0f));
 
-  this->data_.temp_offset = static_cast<TargetTemp>(raw);
+  auto *update = this->update_prepare();
+  update->temp_offset = static_cast<TargetTemp>(raw);
 
-  ESP_LOGD(TAG, "Set local temperature offset %.1f °C, raw=%u", offset, raw);
+  ESP_LOGD(TAG, "Set temperature offset %.1f °C, raw=%u", offset, raw);
 
   return true;
 }
