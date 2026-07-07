@@ -86,8 +86,7 @@ void TrumaAirconClimate::setup() {
     //     this->preset = climate::CLIMATE_PRESET_NONE;
     //     break;
     // }
-    ESP_LOGI(TAG, "AIRCON CLIMATE publish: raw_mode=0x%02X raw_fan=0x%02X mode=%d fan=%d",
-      p[0], p[2], static_cast<int>(this->mode), static_cast<int>(this->fan_mode.value_or(climate::CLIMATE_FAN_OFF)));
+    
     this->publish_state();
   });
 }
