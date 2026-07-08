@@ -34,7 +34,7 @@ StatusFrameConfigResponse *TrumaiNetBoxAppConfig::update_prepare() {
 
 void TrumaiNetBoxAppConfig::create_update_data(StatusFrame *response, uint8_t *response_len,
                                                uint8_t command_counter) {
-  status_frame_create_empty(response, STAUTS_FRAME_CONFIG_RESPONSE, sizeof(StatusFrameConfigResponse),
+  status_frame_create_empty(response, STATUS_FRAME_CONFIG_RESPONSE, sizeof(StatusFrameConfigResponse),
                             command_counter);
 
   response->configResponse = this->update_status_;
