@@ -63,6 +63,13 @@ void TrumaSensor::setup() {
         break;
     }
   });
+
+  this->parent_->get_config()->add_on_message_callback(
+    [this](const StatusFrameConfigResponse *status_config) {
+      if (this->type_ == TRUMA_SENSOR_TYPE::CONFIG_TEMP_OFFSET) {
+        this->publish_state(this->parent_->get_config()->get_temp_offset());
+      }
+  });
 }
 
 void TrumaSensor::dump_config() {
