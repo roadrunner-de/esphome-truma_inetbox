@@ -52,22 +52,6 @@ float TrumaiNetBoxAppConfig::get_temp_offset() const {
   return temp_code_to_decimal(this->data_.temp_offset);
 }
 
-bool TrumaiNetBoxAppConfig::action_set_temp_offset(float offset) {
-  if (offset < -5.0f) offset = -5.0f;
-  if (offset > 0.0f) offset = 0.0f;
-
-  offset = std::round(offset * 2.0f) / 2.0f;
-
-  const uint16_t raw = static_cast<uint16_t>(std::lround((273.0f + offset) * 10.0f));
-
-  auto *update = this->update_prepare();
-  update->temp_offset = static_cast<TargetTemp>(raw);
-
-  ESP_LOGD(TAG, "Set temperature offset %.1f °C, raw=%u", offset, raw);
-
-  return true;
-}
-
 void TrumaiNetBoxAppConfig::dump_data() const {
   ESP_LOGD(TAG, "StatusFrameConfig Offset: %.1f", this->get_temp_offset());
 }

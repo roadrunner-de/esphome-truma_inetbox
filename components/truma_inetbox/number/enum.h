@@ -37,9 +37,6 @@ static const char *enum_to_c_str(
     case TRUMA_NUMBER_TYPE::AIRCON_MANUAL_TEMPERATURE:
       return "AIRCON_MANUAL_TEMPERATURE";
 
-    case TRUMA_NUMBER_TYPE::CONFIG_TEMP_OFFSET:
-      return "CONFIG_TEMP_OFFSET";
-
     default:
       return "";
   }

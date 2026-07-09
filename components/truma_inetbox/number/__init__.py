@@ -73,16 +73,6 @@ CONF_SUPPORTED_TYPE = {
         CONF_MIN_VALUE: 15,
         CONF_STEP: 1,
     },
-#    "CONFIG_TEMP_OFFSET": {
-#        CONF_CLASS: truma_inetbox_ns.class_("TrumaConfigNumber", number.Number, cg.Component),
-#        CONF_TYPE: TRUMA_NUMBER_TYPE_dummy_ns.CONFIG_TEMP_OFFSET,
-#        CONF_UNIT_OF_MEASUREMENT: UNIT_CELSIUS,
-#        CONF_ICON: ICON_THERMOMETER,
-#        CONF_DEVICE_CLASS: DEVICE_CLASS_TEMPERATURE,
-#        CONF_MAX_VALUE: 0.0,
-#        CONF_MIN_VALUE: -5.0,
-#        CONF_STEP: 0.5,
-#    },
 }
 
 

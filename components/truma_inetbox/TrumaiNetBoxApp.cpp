@@ -195,16 +195,6 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
 
   auto statusFrame = reinterpret_cast<const StatusFrame *>(message);
   auto header = &statusFrame->genericHeader;
-  ESP_LOGD(TAG, "### ROADRUNNER DEBUG BUILD ###");
-  ESP_LOGD(TAG,
-         "DEBUG frame: sid=%02X type=%02X len=%u msg_len=%u checksum=%02X h2=%02X h3=%02X",
-         message[0],
-         header->message_type,
-         header->message_length,
-         message_len,
-         header->checksum,
-         header->header_2,
-         header->header_3);
 
   // Validate Truma frame checksum
   if (header->checksum != data_checksum(&statusFrame->raw[10], sizeof(StatusFrame) - 10, (0xFF - header->checksum)) ||
@@ -230,20 +220,6 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
       const auto *stat = &statusFrame->airconManual;
       const uint8_t *p = reinterpret_cast<const uint8_t *>(stat);
     
-      const bool is_saphir_tin2 =
-      this->aircon_device_ == TRUMA_DEVICE::AIRCON_DEVICE &&
-      this->heater_device_ == TRUMA_DEVICE::UNKNOWN;
-
-    if (is_saphir_tin2) {
-      const uint16_t room_temp_raw =
-          (static_cast<uint16_t>(p[9]) << 8) | p[8];
-    
-      ESP_LOGD(TAG,
-         "SAPHIR_TIN2 room_temp_raw=%u room_temp=%.1f",
-         room_temp_raw,
-         (room_temp_raw / 10.0f) - 273.0f);      
-    }
-
     ESP_LOGV(TAG,
          "%02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
          p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8],
@@ -369,18 +345,6 @@ const uint8_t *TrumaiNetBoxApp::lin_multiframe_recieved(const uint8_t *message, 
     // BB.00.1F.00.1E.00.00.22.FF.FF.FF.54.01.0C.0B.00.7C.03.02.01.00.01.0C.00.01.02.01.00.00
     auto device = statusFrame->device;
     this->device_callback_.call(&statusFrame->device);
-    ESP_LOGD(TAG,
-         "DEBUG device: id=%u count=%u sw=%02X.%02X.%02X hw=%04X.%02X unk1=%02X unk2=%02X unk3=%02X",
-         device.device_id,
-         device.device_count,
-         device.software_revision[0],
-         device.software_revision[1],
-         device.software_revision[2],
-         device.hardware_revision_major,
-         device.hardware_revision_minor,
-         device.unknown_1,
-         device.unknown_2,
-         device.unknown_3);
 
     ESP_LOGD(TAG, "StatusFrameDevice %d/%d - %d.%02d.%02d %04X.%02X (%02X %02X)", device.device_id + 1,
              device.device_count, device.software_revision[0], device.software_revision[1], device.software_revision[2],

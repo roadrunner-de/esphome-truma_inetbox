@@ -16,7 +16,6 @@ class TrumaiNetBoxAppConfig
   void dump_data() const override;
 
   float get_temp_offset() const;
-  bool action_set_temp_offset(float offset);
 };
 
 }  // namespace truma_inetbox
